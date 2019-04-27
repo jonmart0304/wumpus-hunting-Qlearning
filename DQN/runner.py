@@ -1,3 +1,4 @@
+import numpy as np
 """
 This is the machinnery that runs your agent in an environment.
 
@@ -9,25 +10,39 @@ class Runner:
         self.environment = environment
         self.agent = agent
         self.verbose = verbose
+        self.obs_size = 5
+        self.batch_size = 32 
 
     def step(self):
         observation = self.environment.observe()
         action = self.agent.act(observation)
         (reward, stop) = self.environment.act(action)
-        self.agent.reward(observation, action, reward)
-        return (observation, action, reward, stop)
+        next_observation = self.agent.next_observation(observation, action)
+        return (observation, action, reward, next_observation, stop)
 
     def loop(self, games, max_iter):
         cumul_reward = 0.0
         for g in range(1, games+1):
             self.agent.reset()
-            self.environment.reset() 
+            self.environment.reset()
             for i in range(1, max_iter+1):
                 if self.verbose:
                     print("Simulation step {}:".format(i))
                     self.environment.display()
-                (obs, act, rew, stop) = self.step()
+                (obs, act, rew, next_obs, stop) = self.step()
+                if stop == None:
+                    stop_val = 0
+                elif stop != None:
+                    stop_val = 1
                 cumul_reward += rew
+
+                pos, smell, breeze, charges = obs
+                obs = [pos[0], pos[1], smell, breeze, charges]
+
+                obs = np.reshape(obs, [1, self.obs_size])
+                next_obs = np.reshape(next_obs, [1, self.obs_size])
+                self.agent.remember(obs, act, rew, next_obs, stop_val)
+
                 if self.verbose:
                     print(" ->       observation: {}".format(obs))
                     print(" ->            action: {}".format(act))
@@ -38,6 +53,8 @@ class Runner:
                     print()
                 if stop is not None:
                     break
+                if len(self.agent.memory) > self.batch_size:
+                    self.agent.replay(self.batch_size)
             if self.verbose:
                 print(" <=> Finished game number: {} <=>".format(g))
                 print()

@@ -53,15 +53,15 @@ class RandomAgent:
 
         position, smell, breeze, charges = observation
 
-        print('position...', position)
-        print('smell...', smell)
-        print('breeze...', breeze)
-        print('charges...', charges)
+        #print('position...', position)
+        #print('smell...', smell)
+        #print('breeze...', breeze)
+        #print('charges...', charges)
         
         self.create_state(observation)
         state_action = self.q_table[observation]
-        print(self.q_table)
-        print(state_action)
+        #print(self.q_table)
+        #print(state_action)
         if self.n_episode >= 900:
             if smell and charges > 0:
                 return self.choose_action(state_action)
@@ -112,8 +112,10 @@ class RandomAgent:
         if action >= 4 and charges > 0:
             charges -= 1
             next_observation = (self.next_position(position, action), smell, breeze, charges)
+            #print('next_observatino...', next_observation)
         else:
             next_observation = (self.next_position(position, action), smell, breeze, charges)
+            #print('next_observation...', next_observation)
         
         return next_observation
 

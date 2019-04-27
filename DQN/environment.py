@@ -8,14 +8,14 @@ This file contains the definition of the environment
 in which the agents are run.
 """
 
-ACT_UP    = 1
-ACT_DOWN  = 2
-ACT_LEFT  = 3
-ACT_RIGHT = 4
-ACT_TORCH_UP    = 5
-ACT_TORCH_DOWN  = 6
-ACT_TORCH_LEFT  = 7
-ACT_TORCH_RIGHT = 8
+ACT_UP    = 0
+ACT_DOWN  = 1
+ACT_LEFT  = 2
+ACT_RIGHT = 3
+ACT_TORCH_UP    = 4
+ACT_TORCH_DOWN  = 5
+ACT_TORCH_LEFT  = 6
+ACT_TORCH_RIGHT = 7
 
 ST_NOTHING = 0
 ST_HOLE = 1
