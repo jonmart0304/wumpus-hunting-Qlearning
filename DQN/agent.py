@@ -27,16 +27,15 @@ class RandomAgent:
             gamma value
         """
         self.learning_rate = .01   # learning rate 
-        self.gamma = .8
         self.obs_size = 5
         self.action_size = 8
 
         self.memory = deque(maxlen=2000)
-        self.gamma = 0.95    # discount rate
-        self.epsilon = 1.0  # exploration rate
-        self.epsilon_min = 0.01
-        self.epsilon_decay = 0.995
-        self.learning_rate = 0.001
+        self.gamma = 0.8    # discount rate
+        #self.epsilon = 1.0  # exploration rate
+        self.epsilon_a = -1/900
+        #self.epsilon_min = 0.01
+        #self.epsilon_decay = 0.995
         self.model = self._build_model()
 
         # Episode is defined as each time we starting moving until we die
@@ -44,6 +43,7 @@ class RandomAgent:
 
         # Step is defined as the iteration in each game
         self.step = 0
+        self.rand_act_count = 0
 
         self.cumul_reward = 0
         
@@ -71,11 +71,13 @@ class RandomAgent:
             target_f = self.model.predict(state)
             target_f[0][action] = target
             self.model.fit(state, target_f, epochs=5, verbose=0)
-        if self.epsilon > self.epsilon_min:
-            self.epsilon *= self.epsilon_decay
+        #print('Epsilon...', self.epsilon)
+        #if self.epsilon > self.epsilon_min:
+        #    self.epsilon *= self.epsilon_decay
 
     def reset(self):
         self.step = 0
+        self.rand_act_count = 0
         self.n_episode += 1
         if self.n_episode == 1000:
             print(self.cumul_reward)
@@ -83,16 +85,25 @@ class RandomAgent:
 
     def act(self, observation):
         self.step += 1
+        self.epsilon = 0.5
 
         position, smell, breeze, charges = observation
 
         observation_vector = [position[0], position[1], smell, breeze, charges]
 
-        if np.random.rand() <= self.epsilon:
-            return random.randrange(self.action_size)
-        observation_vector = np.asarray(observation_vector)
-        observation_vector = np.reshape(observation_vector, [1, self.obs_size])
-        act_values = self.model.predict(observation_vector)
+        #if np.random.rand() <= self.epsilon:
+        if np.random.uniform() >= self.epsilon_a * self.epsilon + 1:
+            observation_vector = np.asarray(observation_vector)
+            observation_vector = np.reshape(observation_vector, [1, self.obs_size])
+            act_values = self.model.predict(observation_vector)
+        else:
+
+            self.rand_act_count += 1
+            #return random.randrange(self.action_size)
+            if smell and charges > 0:
+                return np.random.randint(0,8)
+            else:
+                return np.random.randint(0,4)
         return np.argmax(act_values[0])  # returns action
 
     def next_observation(self, observation, action):

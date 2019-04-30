@@ -42,6 +42,8 @@ class RandomAgent:
 
     def reset(self):
         self.step = 0
+        self.rand_act_count = 0
+        self.total_reward = 0
         self.n_episode += 1
         if self.n_episode == 1000:
             print(self.cumul_reward)
@@ -74,6 +76,7 @@ class RandomAgent:
             else:
                 return self.choose_action(state_action[0:4])
         else:
+            self.rand_act_count += 1
             if smell and charges > 0:
                 return np.random.randint(1,9)
             else:

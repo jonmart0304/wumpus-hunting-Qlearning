@@ -1,4 +1,5 @@
 from matplotlib import pyplot as plt
+import statistics as stat
 """
 This is the machinnery that runs your agent in an environment.
 
@@ -21,6 +22,8 @@ class Runner:
     def loop(self, games, max_iter):
         cumul_reward = 0.0
         rew_hist = []
+        rand_act_hist = []
+        track_games = 0
         for g in range(1, games+1):
             self.agent.reset()
             self.environment.reset() 
@@ -40,14 +43,42 @@ class Runner:
                     print()
                 if stop is not None:
                     rew_hist.append(rew)
+                    rand_act_hist.append(self.agent.rand_act_count)
                     break
                 if i == max_iter:
                     rew_hist.append(rew)
+                    rand_act_hist.append(self.agent.rand_act_count)
             if self.verbose:
                 print(" <=> Finished game number: {} <=>".format(g))
                 print()
-        plt.plot(rew_hist)
+            track_games += 1
+
+        print('Max...', max(rew_hist))
+        print('Min...', min(rew_hist))
+        print('Avg...', stat.mean(rew_hist))
+        print('Std Dev...', stat.stdev(rew_hist))
+        print('Total reward...', cumul_reward)
+        #plt.plot(rew_hist)
+        #plt.show()
+        #plt.plot()
+
+        plt.figure(1)
+        plt.plot(rew_hist, 'o-')
+        plt.title('Score Per Game')
+        plt.xlabel('Score')
+        plt.ylabel('Game')
+
+        plt.savefig('Final_Plots/1000_5_score.png')
+
+        plt.figure(2)
+        plt.plot(rand_act_hist, '.-')
+        plt.title('Random Actions Per Game')
+        plt.xlabel('Game')
+        plt.ylabel('Random Actions')
+        plt.savefig('Final_Plots/1000_5_rand.png')
+
         plt.show()
+
         return cumul_reward
 
 def iter_or_loopcall(o, count):

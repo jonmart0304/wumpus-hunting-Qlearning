@@ -84,14 +84,14 @@ class Runner:
         plt.title('Score Per Game')
         plt.xlabel('Score')
         plt.ylabel('Game')
-        plt.savefig('Final_Plots/1000_5epochs_1_score.png')
+        plt.savefig('Final_Plots/100_2_score.png')
 
         plt.figure(2)
         plt.plot(rand_act_hist, '.-')
         plt.title('Random Actions Per Game')
         plt.xlabel('Game')
         plt.ylabel('Random Actions')
-        plt.savefig('Final_Plots/1000_5epochs_1_rand.png')
+        plt.savefig('Final_Plots/100_2_rand.png')
 
         plt.show()
 
