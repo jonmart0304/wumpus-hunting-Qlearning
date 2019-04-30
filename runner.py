@@ -1,3 +1,4 @@
+from matplotlib import pyplot as plt
 """
 This is the machinnery that runs your agent in an environment.
 
@@ -19,6 +20,7 @@ class Runner:
 
     def loop(self, games, max_iter):
         cumul_reward = 0.0
+        rew_hist = []
         for g in range(1, games+1):
             self.agent.reset()
             self.environment.reset() 
@@ -37,10 +39,15 @@ class Runner:
                         print(" ->    Terminal event: {}".format(stop))
                     print()
                 if stop is not None:
+                    rew_hist.append(rew)
                     break
+                if i == max_iter:
+                    rew_hist.append(rew)
             if self.verbose:
                 print(" <=> Finished game number: {} <=>".format(g))
                 print()
+        plt.plot(rew_hist)
+        plt.show()
         return cumul_reward
 
 def iter_or_loopcall(o, count):

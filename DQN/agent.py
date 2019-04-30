@@ -52,6 +52,7 @@ class RandomAgent:
         # Neural Net for Deep-Q learning Model
         model = Sequential()
         model.add(Dense(5, input_dim=self.obs_size, activation='relu'))
+        #model.add(Dense(5, activation='relu'))
         #model.add(Dense(24, activation='relu'))
         model.add(Dense(self.action_size, activation='softmax'))
         model.compile(loss='categorical_crossentropy', optimizer=Adam(lr=self.learning_rate))
@@ -69,7 +70,7 @@ class RandomAgent:
                           np.argmax(self.model.predict(next_state)[0]))
             target_f = self.model.predict(state)
             target_f[0][action] = target
-            self.model.fit(state, target_f, epochs=1, verbose=0)
+            self.model.fit(state, target_f, epochs=5, verbose=0)
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
 
@@ -82,7 +83,6 @@ class RandomAgent:
 
     def act(self, observation):
         self.step += 1
-        self.epsilon = 0.5
 
         position, smell, breeze, charges = observation
 

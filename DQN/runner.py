@@ -1,4 +1,6 @@
 import numpy as np
+import statistics as stat
+from matplotlib import pyplot as plt
 """
 This is the machinnery that runs your agent in an environment.
 
@@ -11,7 +13,7 @@ class Runner:
         self.agent = agent
         self.verbose = verbose
         self.obs_size = 5
-        self.batch_size = 32 
+        self.batch_size = 5 
 
     def step(self):
         observation = self.environment.observe()
@@ -22,7 +24,10 @@ class Runner:
 
     def loop(self, games, max_iter):
         cumul_reward = 0.0
+        rew_hist = []
+        track_games = 0
         for g in range(1, games+1):
+            print('Track games...', track_games)
             self.agent.reset()
             self.environment.reset()
             for i in range(1, max_iter+1):
@@ -52,12 +57,23 @@ class Runner:
                         print(" ->    Terminal event: {}".format(stop))
                     print()
                 if stop is not None:
+                    rew_hist.append(rew)
                     break
+                if i == max_iter:
+                    rew_hist.append(rew)
                 if len(self.agent.memory) > self.batch_size:
                     self.agent.replay(self.batch_size)
             if self.verbose:
                 print(" <=> Finished game number: {} <=>".format(g))
                 print()
+            track_games += 1
+        print('Max...', max(rew_hist))
+        print('Min...', min(rew_hist))
+        print('Avg...', stat.mean(rew_hist))
+        print('Std Dev...', stat.stdev(rew_hist))
+        plt.plot(rew_hist)
+        plt.show()
+
         return cumul_reward
 
 def iter_or_loopcall(o, count):
